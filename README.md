@@ -9,6 +9,7 @@ steps:
   - name: Send build failure alert
     uses: choreo-templates/choreo-build-failure-alert-send@v1.0.0
     with:
+      workflowSteps: ${{ toJson(steps) }}
       baseURL: ${{ BASE_URL }}
       orgId: ${{ ORG_ID }}
       envId: ${{ ENV_ID }}
