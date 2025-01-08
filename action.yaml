@@ -8,6 +8,9 @@ runs:
   using: 'node16'
   main: 'dist/index.js'
 inputs:
+  workflowSteps:
+    required: true
+    description: 'Workflow Steps'
   baseURL:
     required: true
     description: 'Call back base URL'

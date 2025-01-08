@@ -3,6 +3,7 @@ const github = require('@actions/github');
 const axios = require('axios').default;
 
 try {
+    const workflowSteps = core.getInput('workflowSteps');
     const baseURL = core.getInput('baseURL');
     const orgId = core.getInput('orgId');
     const envId = core.getInput('envId');
@@ -23,7 +24,7 @@ try {
     const ENV_NAME = "Dev";
     const tokenEndpoint = '/oauth2/token';
 
-    const steps = github.context.steps;
+    const steps = JSON.parse(workflowSteps)
     if (!steps || Object.keys(steps).length === 0) {
         console.log("choreo-build-failure-alert-send", "No steps found");
         return;
@@ -42,9 +43,9 @@ try {
     }
 
     const isBuildFailure = (steps) => {
-        for (const [stepId, stepInfo] of Object.entries(steps)) {
+        for (const [stepName, stepInfo] of Object.entries(steps)) {
             if (stepInfo.outcome === 'failure') {
-                console.log("choreo-build-failure-alert-send", "Build failed at step: ", stepId);
+                console.log("choreo-build-failure-alert-send", "Build failed at step: ", stepName);
                 return true;
             }
         }
