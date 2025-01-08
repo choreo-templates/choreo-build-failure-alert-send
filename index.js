@@ -30,8 +30,15 @@ try {
     }
 
     if (isBuildFailure(steps)) {
-        const accessToken = getAccessToken();
-        sendAlert(accessToken);
+        (async () => {
+            try {
+                const accessToken = await getAccessToken();
+                await sendAlert(accessToken);
+            } catch (error) {
+                console.error('Error', error);
+                console.log("choreo-build-failure-alert-send", "failed");
+            }
+        })();
     }
 
     const isBuildFailure = (steps) => {
@@ -45,26 +52,27 @@ try {
         return false;
     }
 
-    const getAccessToken = () => {
+    const getAccessToken = async () => {
         const tokenURL = `${stsEndpoint}${tokenEndpoint}`;    
         const client_credentials = `${alertingClientID}:${alertingClientSecret}`;
         const auth_header = `Basic ${Buffer.from(client_credentials).toString('base64')}`;
 
-        axios.post(tokenURL, {grant_type: 'client_credentials'}, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': auth_header
-            }
-        }).then((response) => {
+        try {
+            const response = await axios.post(tokenURL, {grant_type: 'client_credentials'}, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': auth_header
+                }
+            });
             const accessToken = response.data.access_token;
             return accessToken;
-        }).catch((error) => {
+        } catch (error) {
             console.log("choreo-build-failure-alert-send", "failed");
             console.log("choreo-build-failure-alert-send", error.message);
-        });
+        }
     }
 
-    const sendAlert = (accessToken) => {    
+    const sendAlert = async (accessToken) => {    
         const url = `${baseURL}/publishAlerts`;
         const payload = {
             orgId: orgId,
@@ -93,13 +101,12 @@ try {
             'Authorization': `Bearer ${accessToken}`
         }
 
-        axios.post(url, payload, {
-            headers: headers
-        }).then(
-            () => {
-                console.log("choreo-build-failure-alert-send", "sent");
-            }
-        ).catch((error => {
+        try {
+            await axios.post(url, payload, {
+                headers: headers
+            });
+            console.log("choreo-build-failure-alert-send", "sent");
+        } catch (error) {
             console.error('Error', error);
             if (error.response) {
                 console.log("choreo-alert", error.response.data);
@@ -110,7 +117,7 @@ try {
                 console.log('Error', error.message);
                 console.log("choreo-alert", "failed");
             }
-        }));
+        }
     }
 } catch (e) {
     console.log("choreo-build-failure-alert-send", "failed");
