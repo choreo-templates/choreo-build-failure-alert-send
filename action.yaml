@@ -1,0 +1,46 @@
+name: 'Choreo Send build failure alert'
+description: 'Choreo Send build failure alert'
+author: WSO2
+branding:
+  icon: 'arrow-up-circle'
+  color: 'orange'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+inputs:
+  baseURL:
+    required: true
+    description: 'Call back base URL'
+  orgId:
+    required: true
+    description: 'Organization ID'
+  envId:
+    required: true
+    description: 'Environment ID'
+  componentName:
+    required: true
+    description: 'Component Name'
+  componentVersion:
+    required: true
+    description: 'Component Version'
+  orgName:
+    required: true
+    description: 'Organization Name'
+  commitId:
+    required: true
+    description: 'Commit ID'
+  runId:
+    required: true
+    description: 'Run ID'
+  appId:
+    required: true
+    description: 'Application ID'
+  stsEndpoint:
+    required: true
+    description: 'STS Endpoint'
+  alertingClientID:
+    required: true
+    description: 'Alerting Client ID'
+  alertingClientSecret:
+    required: true
+    description: 'Alerting Client Secret'
