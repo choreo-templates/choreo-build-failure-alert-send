@@ -41621,18 +41621,6 @@ try {
         return;
     }
 
-    if (isBuildFailure(steps)) {
-        (async () => {
-            try {
-                const accessToken = await getAccessToken();
-                await sendAlert(accessToken);
-            } catch (error) {
-                console.error('Error', error);
-                console.log("choreo-build-failure-alert-send", "failed");
-            }
-        })();
-    }
-
     const isBuildFailure = (steps) => {
         for (const [stepName, stepInfo] of Object.entries(steps)) {
             if (stepInfo.outcome === 'failure') {
@@ -41711,6 +41699,18 @@ try {
             }
         }
     }
+
+    if (isBuildFailure(steps)) {
+      (async () => {
+          try {
+              const accessToken = await getAccessToken();
+              await sendAlert(accessToken);
+          } catch (error) {
+              console.error('Error', error);
+              console.log("choreo-build-failure-alert-send", "failed");
+          }
+      })();
+  }
 } catch (e) {
     console.log("choreo-build-failure-alert-send", "failed");
     console.log("choreo-build-failure-alert-send", e.message);
